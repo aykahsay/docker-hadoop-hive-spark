@@ -144,7 +144,7 @@ To allow our query engine to authenticate without proxyuser permissions, we disa
   \end{minipage}
 }
 \caption{Metastore Schema Initialization logs. \textbf{[What to Paste Here: A terminal screenshot showing the schematool command output confirming derby initialization to version 4.0.0.]}}
-\label{fig:metastore_init}
+\label{fig:metastoreinit}
 \end{figure}
 
 \section{Step-by-Step Data Preprocessing Tasks}
@@ -179,7 +179,7 @@ TBLPROPERTIES ("skip.header.line.count"="1");
   \end{minipage}
 }
 \caption{Verification of CSV Dataset on Hadoop HDFS. \textbf{[What to Paste Here: A terminal screenshot of the command ``hdfs dfs -ls -R /data'' showing that the file is in HDFS supergroup.]}}
-\label{fig:hdfs_upload}
+\label{fig:hdfsupload}
 \end{figure}
 
 \subsection{Step 2: Exploring the Data}
@@ -288,7 +288,7 @@ The final cleaned dataset shows perfect de-duplication, format standardizations,
   \end{minipage}
 }
 \caption{Final Processed Dataset stored in Hive ORC Table. \textbf{[What to Paste Here: A terminal screenshot of the final query results showing the 7 cleaned student records.]}}
-\label{fig:final_dataset}
+\label{fig:finaldataset}
 \end{figure}
 
 \section{Conclusion}
