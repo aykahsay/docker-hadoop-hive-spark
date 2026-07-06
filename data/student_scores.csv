@@ -1,0 +1,10 @@
+id,name,gender,marks,course
+101,John,Male,78,Math
+102,Mary,Female,,Math
+103,Peter,male,55,Physics
+104,Jane,Female,82,Math
+105,David,Male,120,Physics
+106,Susan,Female,90,Math
+107,Paul,M,38,Math
+108,Linda,Female,72,Physics
+101,John,Male,78,Math
