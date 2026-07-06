@@ -13,6 +13,9 @@
 \usepackage{amsmath}
 \usepackage{float}
 
+% Adjust headheight to prevent fancyhdr warnings
+\setlength{\headheight}{14pt}
+
 % Color Definitions (Slate & Cool Theme)
 \definecolor{primary}{HTML}{0F172A}    % Slate 900
 \definecolor{secondary}{HTML}{1E293B}  % Slate 800
@@ -85,14 +88,14 @@
 \section{Introduction}
 Data preprocessing is a critical first step in big data analytics and machine learning pipelines. Messy, raw data stored in distributed systems like Apache Hadoop must be cleaned, deduplicated, and formatted to ensure analytical accuracy and model reliability.
 
-This report outlines the end-to-end implementation of a Hive preprocessing pipeline executed on the student scores dataset (`student_score.xlsx`). Using Apache Hive, we clean invalid, missing, and duplicate values, standardize text representations, and output a clean, high-performance structured dataset.
+This report outlines the end-to-end implementation of a Hive preprocessing pipeline executed on the student scores dataset (\texttt{student\_score.xlsx}). Using Apache Hive, we clean invalid, missing, and duplicate values, standardize text representations, and output a clean, high-performance structured dataset.
 
 \section{System Architecture \& Environment Setup}
 The preprocessing workflow maps raw unstructured data to high-performance columnar storage in the Hadoop cluster:
 \begin{enumerate}
-    \item \textbf{Ingestion Layer (Python):} Converts the raw binary `student_score.xlsx` into a clean CSV format, handling empty columns and rows.
-    \item \textbf{Hadoop HDFS Storage:} Stores the staging dataset under the `/data/` HDFS namespace.
-    \item \textbf{Staging Layer (Hive):} Creates an external text staging table (`raw_data`) pointing to the HDFS CSV directory.
+    \item \textbf{Ingestion Layer (Python):} Converts the raw binary \texttt{student\_score.xlsx} into a clean CSV format, handling empty columns and rows.
+    \item \textbf{Hadoop HDFS Storage:} Stores the staging dataset under the \texttt{/data/} HDFS namespace.
+    \item \textbf{Staging Layer (Hive):} Creates an external text staging table (\texttt{raw\_data}) pointing to the HDFS CSV directory.
     \item \textbf{Processing Layer (HiveServer2):} Runs structured data cleaning, deduplication, standardizations, and outlier checks.
     \item \textbf{Analytics Warehouse (ORC):} Stores the final clean dataset as an optimized ORC table compressed with Snappy.
 \end{enumerate}
@@ -118,7 +121,7 @@ The preprocessing workflow maps raw unstructured data to high-performance column
 \section{Hive Metastore Configuration \& Startup}
 To connect to the local Hadoop Distributed File System, Apache Hive must be initialized with a relational Metastore database. In our environment, we configure a local embedded Derby instance.
 
-\subsection{Impersonation Workaround (`hive-site.xml`)}
+\subsection{Impersonation Workaround (\texttt{hive-site.xml})}
 To allow our query engine to authenticate without proxyuser permissions, we disable user impersonation in the Hive configuration:
 \begin{lstlisting}[language=XML]
 <property>
@@ -136,7 +139,7 @@ To allow our query engine to authenticate without proxyuser permissions, we disa
     \vspace{1.5cm}
     \textbf{\large [PLACEHOLDER: Metastore Schema Initialization Output]} \\
     \vspace{0.8cm}
-    \small \textit{Instructions: Capture a screenshot of your terminal showing the execution of `schematool -dbType derby -initSchema`. The output should show the derby schema files executing and ending with a success confirmation.} \\
+    \small \textit{Instructions: Capture a screenshot of your terminal showing the execution of \texttt{schematool -dbType derby -initSchema}. The output should show the derby schema files executing and ending with a success confirmation.} \\
     \vspace{1.5cm}
   \end{minipage}
 }
@@ -146,8 +149,8 @@ To allow our query engine to authenticate without proxyuser permissions, we disa
 
 \section{Step-by-Step Data Preprocessing Tasks}
 
-\subsection{Step 1: Staging Table & HDFS Load}
-We create the staging table `raw_data` mapped to HDFS `/data/student_scores.csv`. The column order matches: `id, name, gender, marks, course`.
+\subsection{Step 1: Staging Table \& HDFS Load}
+We create the staging table \texttt{raw\_data} mapped to HDFS \texttt{/data/student\_scores.csv}. The column order matches: \texttt{id, name, gender, marks, course}.
 \begin{lstlisting}[language=SQL]
 CREATE TABLE raw_data (
     id STRING,
@@ -171,7 +174,7 @@ TBLPROPERTIES ("skip.header.line.count"="1");
     \vspace{1.5cm}
     \textbf{\large [PLACEHOLDER: HDFS File Upload and Directory Listing]} \\
     \vspace{0.8cm}
-    \small \textit{Instructions: Run the upload script `scripts/upload_to_hdfs.sh` and capture a screenshot of your terminal showing HDFS directory listing `hdfs dfs -ls /data/student_scores.csv` confirming the dataset is correctly stored in Hadoop.} \\
+    \small \textit{Instructions: Run the upload script \texttt{scripts/upload\_to\_hdfs.sh} and capture a screenshot of your terminal showing HDFS directory listing \texttt{hdfs dfs -ls /data/student\_scores.csv} confirming the dataset is correctly stored in Hadoop.} \\
     \vspace{1.5cm}
   \end{minipage}
 }
@@ -180,13 +183,13 @@ TBLPROPERTIES ("skip.header.line.count"="1");
 \end{figure}
 
 \subsection{Step 2: Exploring the Data}
-We query the staging table using a `SELECT` statement to understand its structure and identify anomalies:
+We query the staging table using a \texttt{SELECT} statement to understand its structure and identify anomalies:
 \begin{lstlisting}[language=SQL]
 SELECT * FROM raw_data;
 \end{lstlisting}
 
 \subsection{Step 3: Handle Missing Values}
-We locate records with missing marks and substitute empty fields with `0`:
+We locate records with missing marks and substitute empty fields with \texttt{0}:
 \begin{lstlisting}[language=SQL]
 -- Find NULL values
 SELECT * FROM raw_data WHERE marks IS NULL OR marks = '';
@@ -204,7 +207,7 @@ CREATE TABLE no_duplicates AS SELECT DISTINCT * FROM raw_data;
 \end{lstlisting}
 
 \subsection{Step 5: Inconsistent Formats}
-We standardize text columns to upper/lower casing and map inconsistent gender categories (e.g., `male`, `M`) to unified terms (`Male`, `Female`):
+We standardize text columns to upper/lower casing and map inconsistent gender categories (e.g., \texttt{male}, \texttt{M}) to unified terms (\texttt{Male}, \texttt{Female}):
 \begin{lstlisting}[language=SQL]
 SELECT id, UPPER(name), LOWER(course) FROM raw_data;
 SELECT CASE
@@ -214,7 +217,7 @@ SELECT CASE
 END AS gender FROM raw_data;
 \end{lstlisting}
 
-\subsection{Step 6: Outliers & Noisy Data}
+\subsection{Step 6: Outliers \& Noisy Data}
 We detect records with out-of-range scores (marks $< 0$ or marks $> 100$) for removal:
 \begin{lstlisting}[language=SQL]
 SELECT * FROM raw_data WHERE CAST(marks AS INT) < 0 OR CAST(marks AS INT) > 100;
@@ -238,7 +241,7 @@ SELECT * FROM raw_data WHERE CAST(marks AS INT) < 0 OR CAST(marks AS INT) > 100;
 \end{figure}
 
 \subsection{Step 7: Final Cleaned Table Creation}
-We aggregate all cleaning filters into a CTAS query to create `cleaned_student_scores` in ORC format with Snappy compression:
+We aggregate all cleaning filters into a CTAS query to create \texttt{cleaned\_student\_scores} in ORC format with Snappy compression:
 \begin{lstlisting}[language=SQL]
 CREATE TABLE cleaned_student_scores
 STORED AS ORC
@@ -263,7 +266,7 @@ WHERE marks = '' OR (CAST(marks AS INT) BETWEEN 0 AND 100);
 \section{Final Execution Results}
 
 \subsection{Memory Tuning for Local Mode}
-Running the MapReduce job inside a local, resource-capped JVM (capped at 256MB) triggered `OutOfMemoryError: Java heap space` due to the Map task sort buffer size (default 100MB). We set the sort buffer to 10MB to resolve this:
+Running the MapReduce job inside a local, resource-capped JVM (capped at 256MB) triggered \texttt{OutOfMemoryError: Java heap space} due to the Map task sort buffer size (default 100MB). We set the sort buffer to 10MB to resolve this:
 \begin{lstlisting}[language=SQL]
 SET mapreduce.task.io.sort.mb=10;
 \end{lstlisting}
@@ -280,7 +283,7 @@ The final cleaned dataset shows perfect de-duplication, format standardizations,
     \vspace{1.5cm}
     \textbf{\large [PLACEHOLDER: Beeline Cleaned Dataset Query Output]} \\
     \vspace{0.8cm}
-    \small \textit{Instructions: Run the query `SELECT * FROM cleaned_student_scores;` inside Beeline. Capture a screenshot of the output showing 7 cleaned student rows, with upper case names, lower case courses, Mary's marks as 0, and no duplicates.} \\
+    \small \textit{Instructions: Run the query \texttt{SELECT * FROM cleaned\_student\_scores;} inside Beeline. Capture a screenshot of the output showing 7 cleaned student rows, with upper case names, lower case courses, Mary's marks as 0, and no duplicates.} \\
     \vspace{1.5cm}
   \end{minipage}
 }
@@ -289,6 +292,6 @@ The final cleaned dataset shows perfect de-duplication, format standardizations,
 \end{figure}
 
 \section{Conclusion}
-This lab successfully demonstrates data cleaning and preprocessing inside Apache Hive. By leveraging HQL functions like `COALESCE`, `NULLIF`, `DISTINCT`, and `CASE` conditional expressions, we transformed raw Excel data into a cleaned table, ready for analytical queries and machine learning models.
+This lab successfully demonstrates data cleaning and preprocessing inside Apache Hive. By leveraging HQL functions like \texttt{COALESCE}, \texttt{NULLIF}, \texttt{DISTINCT}, and \texttt{CASE} conditional expressions, we transformed raw Excel data into a cleaned table, ready for analytical queries and machine learning models.
 
 \end{document}
