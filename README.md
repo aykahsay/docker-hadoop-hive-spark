@@ -2,6 +2,16 @@
 
 This is a complete, unified Docker multi-container environment with Hadoop (HDFS), Spark, and Hive. It is designed specifically for Big Data Analytics assignments, combining both **Descriptive Analytics (Hive)** and **Predictive Analytics (Spark)** into a single, cohesive workflow without the massive memory requirements of a full Cloudera sandbox.
 
+## ⚠️ Prerequisites
+
+Before cloning or running this project, you must have Docker installed and properly configured on your machine.
+
+1. **Install Docker Desktop:** Download and install [Docker Desktop](https://www.docker.com/products/docker-desktop) for Windows, Mac, or Linux.
+2. **System Requirements (RAM):** Running Hadoop, Hive, and Spark simultaneously is resource-intensive. You must allocate at least **6GB to 8GB of RAM** to Docker in your Docker Desktop settings (Settings > Resources > Memory).
+3. **WSL2 (Windows Users):** If you are on Windows, ensure the [WSL2 backend](https://docs.docker.com/desktop/wsl/) is enabled in Docker Desktop.
+
+---
+
 ## Installation (For new users)
 
 To run this project on a new machine, first clone the repository and navigate into it:
