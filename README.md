@@ -8,7 +8,10 @@ Before cloning or running this project, you must have Docker installed and prope
 
 1. **Install Docker Desktop:** Download and install [Docker Desktop](https://www.docker.com/products/docker-desktop) for Windows, Mac, or Linux.
 2. **System Requirements (RAM):** Running Hadoop, Hive, and Spark simultaneously is resource-intensive. You must allocate at least **6GB to 8GB of RAM** to Docker in your Docker Desktop settings (Settings > Resources > Memory).
-3. **WSL2 (Windows Users):** If you are on Windows, ensure the [WSL2 backend](https://docs.docker.com/desktop/wsl/) is enabled in Docker Desktop.
+3. **WSL2 (Windows Users):** If you are on Windows, ensure the WSL2 backend is enabled.
+   * Open PowerShell as Administrator and run: `wsl --install`
+   * Open Docker Desktop, go to **Settings > General**, and check **"Use the WSL 2 based engine"**.
+   * Go to **Settings > Resources > WSL Integration** and ensure your Linux distribution (e.g., Ubuntu) is toggled ON.
 
 ---
 
