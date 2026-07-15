@@ -1,52 +1,136 @@
-# Unified Big Data Workspace (Hadoop + Hive + Spark)
+# Docker Hadoop, Spark, and Hive Ecosystem
 
-This repository contains a complete, Dockerized Big Data ecosystem designed for the **Big Data Analytics Group Assignment**. It combines Apache Hadoop, Apache Hive, and Apache Spark into a single, cohesive environment, allowing you to perform both Descriptive and Predictive Analytics entirely from your local machine.
+This is a complete, unified Docker multi-container environment with Hadoop (HDFS), Spark, and Hive. It is designed specifically for Big Data Analytics assignments, combining both **Descriptive Analytics (Hive)** and **Predictive Analytics (Spark)** into a single, cohesive workflow without the massive memory requirements of a full Cloudera sandbox.
 
-## 🌟 Features
-* **Hadoop (HDFS & YARN):** Distributed storage and resource management.
-* **Apache Hive:** Data warehouse infrastructure for Descriptive Analytics using SQL-like queries.
-* **PostgreSQL:** Serves as the robust backend database for the Hive Metastore.
-* **Apache Spark:** In-memory data processing engine for Predictive Analytics and Machine Learning.
+## Quick Start
 
-## 🚀 Quick Start
+To deploy the HDFS-Spark-Hive cluster, simply run the included start script, or use Docker Compose directly:
 
-### 1. Start the Cluster
-Open your terminal (WSL or Bash) in this repository and run:
 ```bash
 ./scripts/start_cluster.sh
+# OR
+docker-compose up -d
 ```
-This script will boot up all 6 Docker containers and wait for them to initialize.
 
-### 2. Access Web UIs
-Once running, you can monitor your cluster via your web browser:
-* **HDFS NameNode:** [http://localhost:9870](http://localhost:9870)
-* **Spark Master:** [http://localhost:8080](http://localhost:8080)
-* **Spark Worker:** [http://localhost:8081](http://localhost:8081)
+`docker-compose` creates a virtual network for the containers to communicate. Once initialized, you can access the web interfaces via your local browser:
 
-## 📊 Descriptive Analysis (Apache Hive)
-Hive is used to run MapReduce queries on your data. 
+* **Namenode:** [http://localhost:9870](http://localhost:9870)
+* **Spark master:** [http://localhost:8080](http://localhost:8080)
+* **Spark worker:** [http://localhost:8081](http://localhost:8081)
+* **Hive Server:** `localhost:10000` (JDBC)
 
-To open the Hive SQL prompt (Beeline):
+---
+
+## 1. Quick Start HDFS (Dependencies & Requirements)
+
+Before doing any analysis, your data must be loaded into the Hadoop Distributed File System (HDFS). 
+
+1. **Copy your local dataset to the namenode container:**
 ```bash
-docker exec -it hive-server beeline -u jdbc:hive2://localhost:10000
+docker cp data/student_performance.csv namenode:/student_performance.csv
 ```
-*Note: Make sure you have uploaded your datasets into HDFS before querying them!*
 
-## ⚡ Predictive Analysis (Apache Spark)
-Spark is used to train Machine Learning models on your data.
+2. **Open a bash shell inside the namenode:**
+```bash
+docker exec -it namenode bash
+```
 
-We have included a helper script to easily submit PySpark scripts to the cluster:
+3. **Create the HDFS directories for your data and Hive:**
+```bash
+hdfs dfs -mkdir -p /user/hive/data
+```
+
+4. **Put the dataset into HDFS:**
+```bash
+hdfs dfs -put /student_performance.csv /user/hive/data/student_performance.csv
+```
+
+---
+
+## 2. Quick Start Spark (Predictive Analysis)
+
+You can check the status of the Spark Master at [http://localhost:8080](http://localhost:8080).
+
+To run PySpark interactively and read the HDFS data:
+
+1. **Go to the command line of the Spark master and start PySpark:**
+```bash
+docker exec -it spark-master bash
+/spark/bin/pyspark --master spark://spark-master:7077
+```
+
+2. **Load your dataset from HDFS inside PySpark:**
+```python
+df = spark.read.csv("hdfs://namenode:9000/user/hive/data/student_performance.csv", header=True, inferSchema=True)
+df.show(5)
+```
+
+**Automated Submission:** 
+If you have written a complete machine learning script (like `scripts/student_predictive.py`), you can submit it directly without opening bash:
 ```bash
 ./scripts/submit_spark.sh scripts/student_predictive.py
 ```
-This will automatically execute the Python script on the `spark-master` container, reading data directly from HDFS.
 
-## 🛑 Stopping the Cluster
-To gracefully shut down the cluster and preserve your data:
+---
+
+## 3. Quick Start Hive (Descriptive Analysis)
+
+Hive is used for querying your massive datasets using SQL-like syntax. The Hive Server runs on port `10000`.
+
+1. **Connect to Hive Server using Beeline:**
+```bash
+docker exec -it hive-server beeline -u jdbc:hive2://localhost:10000 -n root
+```
+
+2. **Create a database and your External Table pointing to the HDFS directory:**
+```sql
+CREATE DATABASE student_analytics;
+USE student_analytics;
+
+CREATE EXTERNAL TABLE IF NOT EXISTS student_performance(
+    Student_ID INT,
+    Math_Score INT,
+    Reading_Score INT,
+    Placement_Status STRING
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+LOCATION '/user/hive/data';
+```
+
+3. **Run your analytical queries:**
+```sql
+SELECT Placement_Status, AVG(Math_Score) as Avg_Math 
+FROM student_performance 
+GROUP BY Placement_Status;
+```
+
+---
+
+## Configure Environment Variables
+
+The cluster relies on `docker-compose.yml` environment variables to wire the services together. 
+
+For example, Spark and Datanodes must know where the Hadoop File System is located. This is defined in the `docker-compose.yml` under each service:
+```yaml
+environment:
+  - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+```
+This is automatically injected into `/etc/hadoop/core-site.xml` at runtime.
+
+Additionally, the `hive-server` depends on the `postgres` Metastore being fully ready before starting. This requirement is handled via the `SERVICE_PRECONDITION` variable:
+```yaml
+environment:
+  - SERVICE_PRECONDITION=namenode:9870 postgres:5432
+```
+
+## Stopping the Cluster
+To cleanly shut down the cluster and preserve your database/HDFS data:
 ```bash
 docker-compose stop
 ```
-If you want to completely destroy the cluster (this will delete your HDFS data!):
+To destroy the cluster and wipe all HDFS data:
 ```bash
 docker-compose down -v
 ```
