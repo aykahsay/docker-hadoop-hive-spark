@@ -86,11 +86,30 @@ df = spark.read.csv("hdfs://namenode:9000/user/hive/data/student_performance.csv
 df.show(5)
 ```
 
-**Automated Submission:** 
-If you have written a complete machine learning script (like `scripts/student_predictive.py`), you can submit it directly without opening bash:
-```bash
-./scripts/submit_spark.sh scripts/student_predictive.py
+**Writing and Submitting Custom Spark Scripts:** 
+
+To write your own PySpark applications for predictive modeling, follow these steps:
+
+1. Create a Python script and save it inside the `scripts/` folder of this repository (e.g., `scripts/my_model.py`). This folder is automatically mounted into the Spark containers.
+2. Structure your PySpark code to connect to the cluster. Every script should start like this:
+```python
+from pyspark.sql import SparkSession
+
+# Connect to the Spark Cluster
+spark = SparkSession.builder.appName("MyPredictiveModel").getOrCreate()
+
+# Read data directly from Hadoop HDFS
+df = spark.read.csv("hdfs://namenode:9000/user/hive/data/student_performance.csv", header=True, inferSchema=True)
+
+# ... Your Machine Learning Code Here ...
+
+spark.stop()
 ```
+3. Submit your job to the Spark cluster using our helper script:
+```bash
+./scripts/submit_spark.sh scripts/my_model.py
+```
+*Tip: We have already included a fully working Machine Learning template in `scripts/student_predictive.py` that you can run immediately!*
 
 ---
 
