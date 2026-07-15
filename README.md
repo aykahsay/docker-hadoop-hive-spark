@@ -2,8 +2,16 @@
 
 This is a complete, unified Docker multi-container environment with Hadoop (HDFS), Spark, and Hive. It is designed specifically for Big Data Analytics assignments, combining both **Descriptive Analytics (Hive)** and **Predictive Analytics (Spark)** into a single, cohesive workflow without the massive memory requirements of a full Cloudera sandbox.
 
-## Quick Start
+## Installation (For new users)
 
+To run this project on a new machine, first clone the repository and navigate into it:
+
+```bash
+git clone https://github.com/aykahsay/docker-hadoop-hive-spark.git
+cd docker-hadoop-hive-spark
+```
+
+## Quick Start
 To deploy the HDFS-Spark-Hive cluster, simply run the included start script, or use Docker Compose directly:
 
 ```bash
