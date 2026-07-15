@@ -1,43 +1,52 @@
-# Big Data Analytics - Student Performance
+# Unified Big Data Workspace (Hadoop + Hive + Spark)
 
-This project demonstrates a Descriptive and Predictive analysis pipeline of student performance data using Hadoop and Apache Hive. 
+This repository contains a complete, Dockerized Big Data ecosystem designed for the **Big Data Analytics Group Assignment**. It combines Apache Hadoop, Apache Hive, and Apache Spark into a single, cohesive environment, allowing you to perform both Descriptive and Predictive Analytics entirely from your local machine.
 
-## 🐳 Docker Setup
-This project has been fully containerized so you don't need to manually install Hadoop or configure a PostgreSQL metastore on your host machine.
+## 🌟 Features
+* **Hadoop (HDFS & YARN):** Distributed storage and resource management.
+* **Apache Hive:** Data warehouse infrastructure for Descriptive Analytics using SQL-like queries.
+* **PostgreSQL:** Serves as the robust backend database for the Hive Metastore.
+* **Apache Spark:** In-memory data processing engine for Predictive Analytics and Machine Learning.
 
-### Prerequisites
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed on Windows (or Docker Engine on Linux).
+## 🚀 Quick Start
 
-### Running the Cluster
-1. Open a terminal in this directory.
-2. Spin up the cluster:
-   ```bash
-   docker-compose up -d
-   ```
-   This will start a Hadoop Namenode, Datanode, PostgreSQL Database (for Hive Metastore), and a HiveServer2 instance.
+### 1. Start the Cluster
+Open your terminal (WSL or Bash) in this repository and run:
+```bash
+./scripts/start_cluster.sh
+```
+This script will boot up all 6 Docker containers and wait for them to initialize.
 
-3. Wait 1-2 minutes for the Metastore to initialize.
+### 2. Access Web UIs
+Once running, you can monitor your cluster via your web browser:
+* **HDFS NameNode:** [http://localhost:9870](http://localhost:9870)
+* **Spark Master:** [http://localhost:8080](http://localhost:8080)
+* **Spark Worker:** [http://localhost:8081](http://localhost:8081)
 
-4. Run the queries inside the Hive container:
-   ```bash
-   # Upload data to HDFS
-   docker exec -it hive-server bash -c "hdfs dfs -mkdir -p /user/hive/student_data && hdfs dfs -put /data/student_performance.csv /user/hive/student_data/"
-   
-   # Execute the Hive queries
-   docker exec -it hive-server beeline -u jdbc:hive2://localhost:10000 -n hive -f /scripts/student_queries.sql
-   ```
+## 📊 Descriptive Analysis (Apache Hive)
+Hive is used to run MapReduce queries on your data. 
 
-5. When you are done, tear down the cluster:
-   ```bash
-   docker-compose down
-   ```
+To open the Hive SQL prompt (Beeline):
+```bash
+docker exec -it hive-server beeline -u jdbc:hive2://localhost:10000
+```
+*Note: Make sure you have uploaded your datasets into HDFS before querying them!*
 
-## 📊 Analytics Executed
-- **Task 1:** Count Students by Department
-- **Task 2:** Average GPA by Department
-- **Task 3:** Students with Attendance Below 60%
-- **Task 4:** Placement Rate by Program
-- **Task 5:** Ranking Students Within Departments
+## ⚡ Predictive Analysis (Apache Spark)
+Spark is used to train Machine Learning models on your data.
 
-## 📝 Outputs
-All raw outputs, LaTeX reports, and PNG visualizations generated from the analysis are included in the `images/` directory and `student_report.tex`.
+We have included a helper script to easily submit PySpark scripts to the cluster:
+```bash
+./scripts/submit_spark.sh scripts/student_predictive.py
+```
+This will automatically execute the Python script on the `spark-master` container, reading data directly from HDFS.
+
+## 🛑 Stopping the Cluster
+To gracefully shut down the cluster and preserve your data:
+```bash
+docker-compose stop
+```
+If you want to completely destroy the cluster (this will delete your HDFS data!):
+```bash
+docker-compose down -v
+```
