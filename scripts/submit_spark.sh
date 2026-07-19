@@ -8,11 +8,9 @@ fi
 
 SCRIPT_PATH=$1
 
-# We need to extract just the filename if a full path is passed, 
-# because the script folder is mounted inside the container at /scripts
-FILENAME=$(basename -- "$SCRIPT_PATH")
-
-echo "🚀 Submitting $FILENAME to Apache Spark..."
+# We will pass the exact relative path into the container
+# because the whole repository is mounted at /workspace
+echo "🚀 Submitting $SCRIPT_PATH to Apache Spark..."
 docker exec -it spark-master /spark/bin/spark-submit \
     --master spark://spark-master:7077 \
-    /scripts/$FILENAME
+    /workspace/$SCRIPT_PATH

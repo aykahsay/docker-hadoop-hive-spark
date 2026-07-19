@@ -42,13 +42,23 @@ docker-compose up -d
 
 ---
 
+## 📁 Workspace Structure (Monorepo)
+This repository is designed as a unified workspace for three different Big Data subjects. They all share the same Docker cluster!
+* `BigData_Analytics/`: Scripts and datasets for your Analytics course.
+* `DSA3030_TimeSeries/`: Scripts and datasets for your Time Series course.
+* `BigData_Architecture/`: Scripts and datasets for your Architecture course.
+
+*Note: The entire workspace is mounted inside the Hive and Spark containers under `/workspace`. This means Spark can run Python scripts from any of the three folders!*
+
+---
+
 ## 1. Quick Start HDFS (Dependencies & Requirements)
 
 Before doing any analysis, your data must be loaded into the Hadoop Distributed File System (HDFS). 
 
 1. **Copy your local dataset to the namenode container:**
 ```bash
-docker cp data/student_performance.csv namenode:/student_performance.csv
+docker cp BigData_Analytics/data/student_performance.csv namenode:/student_performance.csv
 ```
 
 2. **Open a bash shell inside the namenode:**
@@ -90,7 +100,7 @@ df.show(5)
 
 To write your own PySpark applications for predictive modeling, follow these steps:
 
-1. Create a Python script and save it inside the `scripts/` folder of this repository (e.g., `scripts/my_model.py`). This folder is automatically mounted into the Spark containers.
+1. Create a Python script and save it inside one of your subject folders (e.g., `BigData_Analytics/scripts/my_model.py`). This entire workspace is automatically mounted into the Spark containers.
 2. Structure your PySpark code to connect to the cluster. Every script should start like this:
 ```python
 from pyspark.sql import SparkSession
@@ -107,9 +117,9 @@ spark.stop()
 ```
 3. Submit your job to the Spark cluster using our helper script:
 ```bash
-./scripts/submit_spark.sh scripts/my_model.py
+./scripts/submit_spark.sh BigData_Analytics/scripts/my_model.py
 ```
-*Tip: We have already included a fully working Machine Learning template in `scripts/student_predictive.py` that you can run immediately!*
+*Tip: We have already included a fully working Machine Learning template in `BigData_Analytics/scripts/student_predictive.py` that you can run immediately!*
 
 ---
 

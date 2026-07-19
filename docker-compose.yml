@@ -59,8 +59,7 @@ services:
     ports:
       - 10000:10000
     volumes:
-      - ./data:/data
-      - ./scripts:/scripts
+      - ./:/workspace
     networks:
       - hadoop_network
 
@@ -77,8 +76,7 @@ services:
       - INIT_DAEMON_STEP=setup_spark
       - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
     volumes:
-      - ./data:/data
-      - ./scripts:/scripts
+      - ./:/workspace
     networks:
       - hadoop_network
 
@@ -93,8 +91,7 @@ services:
       - SPARK_MASTER=spark://spark-master:7077
       - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
     volumes:
-      - ./data:/data
-      - ./scripts:/scripts
+      - ./:/workspace
     networks:
       - hadoop_network
 

@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "/mnt/c/bigdata/big-data-analytics-group-assignemnt/scripts/.venv_predict/lib/python3.12/site-packages/pandas/__init__.py", line 22, in <module>
+    from pandas.compat import (
+  File "/mnt/c/bigdata/big-data-analytics-group-assignemnt/scripts/.venv_predict/lib/python3.12/site-packages/pandas/compat/__init__.py", line 27, in <module>
+    from pandas.compat.numpy import is_numpy_dev
+  File "/mnt/c/bigdata/big-data-analytics-group-assignemnt/scripts/.venv_predict/lib/python3.12/site-packages/pandas/compat/numpy/__init__.py", line 7, in <module>
+    from pandas.util.version import Version
+ModuleNotFoundError: No module named 'pandas.util'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/mnt/c/bigdata/big-data-analytics-group-assignemnt/scripts/student_predictive.py", line 16, in <module>
+    import pandas as pd
+  File "/mnt/c/bigdata/big-data-analytics-group-assignemnt/scripts/.venv_predict/lib/python3.12/site-packages/pandas/__init__.py", line 27, in <module>
+    raise ImportError(
+ImportError: C extension: pandas.util not built. If you want to import pandas from the source directory, you may need to run 'python -m pip install -ve . --no-build-isolation -Ceditable-verbose=true' to build the C extensions first.

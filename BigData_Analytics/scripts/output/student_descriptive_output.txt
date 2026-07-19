@@ -1,0 +1,34 @@
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/opt/hive/lib/log4j-slf4j-impl-2.18.0.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/opt/hadoop/share/hadoop/common/lib/slf4j-reload4j-1.7.36.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/opt/hive/lib/log4j-slf4j-impl-2.18.0.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/opt/hadoop/share/hadoop/common/lib/slf4j-reload4j-1.7.36.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+beeline> -- =============================================================================
+beeline> -- File   : student_descriptive.hql
+beeline> -- Purpose: Full Descriptive Analysis of BigData_Student_Performance_Dataset_1000
+beeline> -- Dataset: /data/BigData_Student_Performance_Dataset_1000.csv (HDFS)
+beeline> -- Sections:
+beeline> --   0.  Setup & Table Creation
+beeline> --   1.  Data Quality Checks
+beeline> --   2.  Overall Summary Statistics
+beeline> --   3.  Grade Distribution
+beeline> --   4.  Department Analysis
+beeline> --   5.  Gender Analysis
+beeline> --   6.  Program Analysis (BSc vs MSc)
+beeline> --   7.  Academic Performance (Attendance, CAT, FinalExam, Assignment)
+beeline> --   8.  Engagement Metrics (LMSLogins, LibraryVisits, StudyHours)
+beeline> --   9.  Socioeconomic Analysis (ParentIncome quintiles)
+beeline> --   10. Technology Access (InternetAccess, Device)
+beeline> --   11. Top & Bottom Performers
+beeline> --   12. Location Analysis
+beeline> --   13. Scholarship Impact
+beeline> --   14. Window Functions – Rank within Department
+beeline> -- =============================================================================
+beeline> 
+beeline> SET mapreduce.task.io.sort.mb=32;
+No current connection

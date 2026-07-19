@@ -19,3 +19,6 @@ scripts/.venv_predict/
 # Compiled python
 __pycache__/
 *.pyc
+
+.venv_predict/
+__pycache__/
