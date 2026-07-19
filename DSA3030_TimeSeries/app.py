@@ -77,15 +77,34 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 2. DATA FETCHING FUNCTION
+# 2. DATA FETCHING FUNCTION (FROM SPARK/HADOOP OUTPUT)
 # ---------------------------------------------------------
-@st.cache_data(ttl=3600)  # Cache data for 1 hour to prevent API rate limits
-def load_data(ticker="KES=X", period="5y"):
-    """Fetches real-time Forex data from Yahoo Finance."""
-    df = yf.Ticker(ticker).history(period=period)
-    df.reset_index(inplace=True)
+import os
+import glob
+
+@st.cache_data(ttl=3600)
+def load_data():
+    """Reads the processed Forex data saved by Apache Spark."""
+    data_dir = "data/processed_forex.csv"
     
-    # Clean timezone info for prophet/statsmodels compatibility
+    if not os.path.exists(data_dir):
+        st.error("⚠️ Spark output not found! Please run the Kafka Producer and Spark Processor first.")
+        return pd.DataFrame()
+        
+    # Read all CSV parts output by Spark
+    all_files = glob.glob(os.path.join(data_dir, "*.csv"))
+    if not all_files:
+        st.error("⚠️ No CSV data found in the Spark output directory.")
+        return pd.DataFrame()
+        
+    df = pd.concat((pd.read_csv(f) for f in all_files), ignore_index=True)
+    
+    # Ensure datatypes and sort chronologically
+    df['date'] = pd.to_datetime(df['date'])
+    df = df.sort_values(by='date').reset_index(drop=True)
+    
+    # Clean timezone info and rename to match previous logic
+    df.rename(columns={'date': 'Date', 'open': 'Open', 'high': 'High', 'low': 'Low', 'close': 'Close', 'volume': 'Volume'}, inplace=True)
     df['Date'] = df['Date'].dt.tz_localize(None)
     
     return df
@@ -98,18 +117,15 @@ st.sidebar.title("💱 KES Forex Analytics")
 st.sidebar.markdown("---")
 st.sidebar.markdown("**Course:** DSA3030 Time Series")
 st.sidebar.markdown("**Assignment:** Semester Term Paper")
-st.sidebar.markdown("**Due:** 30 July 2026")
+st.sidebar.markdown("**Pipeline:** Kafka -> Spark -> Hadoop -> Streamlit")
 st.sidebar.markdown("---")
 
-period_selection = st.sidebar.selectbox(
-    "Select Historical Data Range:",
-    ("1y", "2y", "5y", "10y"),
-    index=2
-)
-
 # Fetch Data
-with st.spinner("Fetching Live Market Data..."):
-    data = load_data(period=period_selection)
+with st.spinner("Loading Processed Data from Spark..."):
+    data = load_data()
+    
+if data.empty:
+    st.stop()
 
 st.title("💱 Dynamic Macroeconomic Forecasting: USD to KES")
 st.markdown("*An interactive application analyzing the historical trends, seasonality, and predictive future of the Kenyan Shilling.*")

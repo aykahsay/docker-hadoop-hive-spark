@@ -13,4 +13,5 @@ SCRIPT_PATH=$1
 echo "🚀 Submitting $SCRIPT_PATH to Apache Spark..."
 docker exec -it spark-master /spark/bin/spark-submit \
     --master spark://spark-master:7077 \
+    "${@:2}" \
     /workspace/$SCRIPT_PATH
